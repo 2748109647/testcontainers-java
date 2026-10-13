@@ -6,13 +6,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.utility.MockTestcontainersConfigurationExtension;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockTestcontainersConfigurationExtension.class)
 class ImageFromDockerfileUnitTests {
+
+    @Test
+    void shouldLeaveLayerCachingUnchangedByDefault() {
+        doReturn(false).when(TestcontainersConfiguration.getInstance()).isImageFromDockerfileNoCache();
+
+        BuildImageCmd buildImageCmd = mock(BuildImageCmd.class);
+
+        new ImageFromDockerfile("localhost/testcontainers/test-image").configure(buildImageCmd);
+
+        verify(buildImageCmd, never()).withNoCache(anyBoolean());
+    }
 
     @Test
     void shouldDisableLayerCachingWhenConfigured() {

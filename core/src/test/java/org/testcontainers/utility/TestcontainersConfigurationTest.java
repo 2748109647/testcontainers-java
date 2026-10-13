@@ -241,6 +241,22 @@ class TestcontainersConfigurationTest {
     }
 
     @Test
+    void shouldApplyImageFromDockerfileNoCacheSettingsInOrder() {
+        classpathProperties.setProperty("imagefromdockerfile.nocache", "true");
+        assertThat(newConfig().isImageFromDockerfileNoCache()).isTrue();
+
+        userProperties.setProperty("imagefromdockerfile.nocache", "false");
+        assertThat(newConfig().isImageFromDockerfileNoCache()).isFalse();
+
+        environment.put("TESTCONTAINERS_IMAGEFROMDOCKERFILE_NOCACHE", "true");
+        assertThat(newConfig().isImageFromDockerfileNoCache()).isTrue();
+
+        userProperties.setProperty("imagefromdockerfile.nocache", "true");
+        environment.put("TESTCONTAINERS_IMAGEFROMDOCKERFILE_NOCACHE", "false");
+        assertThat(newConfig().isImageFromDockerfileNoCache()).isFalse();
+    }
+
+    @Test
     void shouldTrimImageNames() {
         userProperties.setProperty("ryuk.container.image", " testcontainers/ryuk:0.3.2 ");
         assertThat(newConfig().getRyukImage())
